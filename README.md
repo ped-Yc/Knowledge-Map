@@ -25,7 +25,9 @@
     > ECS：引擎记录EC的容器，栈底是 GlobalEC ，只有在关闭页面时出栈；栈顶是当前正在执行的 EC ，函数执行完毕后出栈，并将执行权交给下一个 EC 。
 
 - 变量对象（Variable Object）&& 活动对象（Activation Object）
-    > 存储当前EC中变量声明（必须是 var 关键字声明而不是 let 与 const）与函数声明（必须是显式声明而不是表达式）的容器。
+    > VO：EC中用来存储变量声明（必须是 var 关键字声明而不是 let 与 const）与函数声明（必须是显式声明而不是表达式）的容器。由引擎实现，不能访问到。
+    > 
+    > AO：可以理解为VO的实例化，函数调用时在EC中被激活，成员属性能被访问。
 
 - LHS（Left Hand Side） && RHS（Right Hand Side）
     > LHS：赋值操作的目标。例如：a=2; 是对 a 进行 LHS查询。
@@ -66,23 +68,99 @@ JS执行流-->语法检查-->预编译-->执行
 
 *代码分析*
 ```javascript
+// 代码
+var a = "outer";
 
+function foo(i) {
+    console.log(a);
+    console.log(b);
+    console.log(c);
+    var a = 'hello';
+    var b = function () {};
+
+    function c() {};
+    console.log(`------------`);
+    console.log(a);
+    console.log(b);
+    console.log(c);
+}
+
+foo(22);// 对形参i的LHS查询
+
+//结果：
+undefined
+undefined
+ƒ c() {}
+------------
+hello
+ƒ() {}
+ƒ c() {}
+
+// 分析
+// 代码载入前，创建全局EC的伪代码
+GlobalEC : {
+    [[Scope]] : [{VO}],
+    VO : {
+        foo : fnFoo,// 指向函数Foo的引用
+        a :  undefined
+    },
+    this
+}
+// 调用函数foo(22)时，创建当前EC的伪代码
+CurrentEC : {
+    [[Scope]] : [{AO}, {VO}],
+    AO : {
+        // 形参优先于函数声明优先于变量声明
+        arguments : {
+            0 : 22,
+            length : 1
+        },
+        i : 22,// 形参，接受实参赋值
+        c : fnC,//指向函数c的引用
+        a : undefined,
+        b : undefined
+    },
+    this
+}
 ```
+
 *总结*
 > 为什么会产生变量提升与函数提升？
-    
-    答：在代码执行之前的预编译阶段，创建活动对象时，会在活动对象上创建一个与函数声明与变量声明对应的属性，其值是变量名
 
-> var，let，const
+ ```javascript
+ 答：在代码执行之前的预编译阶段，创建当前EC时，会在活动对象上创建一个与函数声明与变量声明对应的属性，然后将活动对象推入作用域链。在查询变量时，是通过作用域链进行RHS查询。所以会查询到作用域链上已经定义的函数与变量。
+ ```
+
+> var，let，const的联系与区别
+
+ ```javascript
+ 答：在ES6之前，JS中只有全局作用域和函数作用域，而不存在块级作用域。在以下代码中，如果只希望在for循环内部使用变量 i 是做不到的。
+
+// {}限制不了 i 的访问范围
+ for(var i = 0; i< 10; i++){ 
+     console.log('inner' + i);// 输出inner1~9
+ }
+ console.log('outer' + i);// 输出outer10
+
+ ES6新增了 let 与 const 关键字，可以用来创建块级作用域，
+
+// 变量 i 只在{}内有效
+  for(let i = 0; i< 10; i++){ 
+     console.log('inner' + i);// 输出inner1~9
+ }
+ console.log('outer' + i);// ReferenceError: i is not defined
+ ```
 
 > VO与AO的区别
 
 *参考资料：*
 
-- [彻底明白作用域、执行上下文](https://segmentfault.com/a/1190000013915935)
-- [JS引擎的执行过程](https://heyingye.github.io/2018/03/19/js%E5%BC%95%E6%93%8E%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/)
-- [深入理解JavaScript的执行流程，执行上下文EC、变量对象VO、活动对象AO、作用域Scope](https://blog.csdn.net/yangxinxiang84/article/details/113051811?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&dist_request_id=1328641.10297.16155372256670345&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control)
 - 《你不知道的Javascript》（上卷），第一部分，作用域和闭包
+- [JS引擎的执行过程](https://heyingye.github.io/2018/03/19/js%E5%BC%95%E6%93%8E%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/)
+- [彻底明白作用域、执行上下文](https://segmentfault.com/a/1190000013915935)
+- [深入理解JavaScript的执行流程，执行上下文EC、变量对象VO、活动对象AO、作用域Scope](https://blog.csdn.net/yangxinxiang84/article/details/113051811?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&dist_request_id=1328641.10297.16155372256670345&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control)
+- [浅谈JS的 VO|AO](https://blog.csdn.net/Ancecis/article/details/104382441)
+- [let实现原理]()
 
 
 ### `异常`
