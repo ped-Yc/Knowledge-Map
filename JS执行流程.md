@@ -1,6 +1,6 @@
 # **JS执行流程**
 
-## 【正文】
+【*正文*】
 
 JS执行流程如下：
 
@@ -32,7 +32,7 @@ JS执行流-->语法检查-->预编译-->执行
 3. 求出上下文内部this的值。
 ```
 
-## 【代码分析】
+【*代码分析*】
 
 ```javascript
 // 代码
@@ -93,7 +93,7 @@ CurrentEC : {
 
 ---
 
-## 【总结】
+【*总结*】
 > 为什么会产生变量提升与函数提升？
 
  ```javascript
@@ -127,7 +127,7 @@ console.log('start'+i);// ReferenceError: Cannot access 'i' before initializatio
 可以抽象的理解为，AO 是VO 的实例化，AO 在执行函数前被激活。
 ```
 
-## 【参考资料】
+【*参考资料*】
 
 - 《你不知道的Javascript》（上卷），第一部分，作用域和闭包
 - [JS引擎的执行过程](https://heyingye.github.io/2018/03/19/js%E5%BC%95%E6%93%8E%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/)
