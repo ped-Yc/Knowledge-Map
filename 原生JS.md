@@ -136,20 +136,25 @@ CurrentEC : {
 
 // {}限制不了 i 的访问范围
  for(var i = 0; i< 10; i++){ 
-     console.log('inner' + i);// 输出inner1~9
+     console.log('inner' + i);// inner1~9
  }
- console.log('outer' + i);// 输出outer10
+ console.log('outer' + i);// outer10
 
- ES6新增了 let 与 const 关键字，可以用来创建块级作用域，
+ ES6新增了 let 与 const 关键字，可以用来创建块级作用域，由这两个关键字声明的变量会绑定块级作用域，存在暂时性死区：进入块级作用域不会有编译过程，只不过通过let或者const声明的变量会在进入块级作用域的时被创建，但是在该变量没有赋值之前，引用该变量JavaScript引擎会抛出错误---这就是“暂时性死区”。
 
 // 变量 i 只在{}内有效
+console.log('start'+i);// ReferenceError: Cannot access 'i' before initialization
   for(let i = 0; i< 10; i++){ 
-     console.log('inner' + i);// 输出inner1~9
+     console.log('inner' + i);// inner1~9
  }
  console.log('outer' + i);// ReferenceError: i is not defined
  ```
 
 > VO与AO的区别
+
+```javascript
+可以抽象的理解为，AO 是VO 的实例化，AO 在执行函数前被激活。
+```
 
 *参考资料：*
 
@@ -158,7 +163,7 @@ CurrentEC : {
 - [彻底明白作用域、执行上下文](https://segmentfault.com/a/1190000013915935)
 - [深入理解JavaScript的执行流程，执行上下文EC、变量对象VO、活动对象AO、作用域Scope](https://blog.csdn.net/yangxinxiang84/article/details/113051811?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&dist_request_id=1328641.10297.16155372256670345&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control)
 - [浅谈JS的 VO|AO](https://blog.csdn.net/Ancecis/article/details/104382441)
-- [let实现原理]()
+- [let实现原理](https://github.com/Advanced-Frontend/Daily-Interview-Question/issues/133)
 
 
 ## `异常`
