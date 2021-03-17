@@ -1,12 +1,60 @@
 # **JS执行流程**
 
-【*正文*】
+## `基础概念`
 
-```
-执行流程：JS执行流-->语法检查-->预编译-->执行
+- JavaScript 是一种具有函数优先的轻量级，解释型或即时编译型的编程语言。
+    > `解释型`：JS引擎在运行JS代码时，是利用解释器一边编译一边执行的。
+    > 
+    > 如此便避免不了一种情况：某些代码多次重复的运行，例如 for循环，在编译型语言中，for循环块中的代码将以机器码执行多次；而在解释型语言中，for循环块中的代码将被解释多次并执行，如此便有了很大的耗损。
+    > 
+    > `即时编译型`：于是JS引擎就加入了`JIT`（Just-in-time）进行编译优化，例如对重复语句和类型判断进行优化。
 
-在预编译阶段主要进行两件事，创建当前环境EC，EC入栈
+- Script标签间的载入顺序 && JS代码的执行流程
+    ```html
+    <script>
+        console.log('script1 start');
 
+        console.log('a',a);
+        var b=2;
+
+        console.log('script1 end');
+    </script>
+
+    <script>
+        console.log('script2 start');
+
+        var a=1;
+        console.log('b',b);
+
+        console.log('script2 end');
+    </script>
+
+    <!-- 
+        script1 start
+        Uncaught ReferenceError: a is not defined
+        script2 start
+        b undefined
+        script2 end
+     -->
+
+    1、从代码运行结果可以看出，JS执行流在进入第一个 script 块时，首先会创建全局 EC ，将 b 的声明加入 AO 并推入作用域中（所以第二个 script 块中的代码才能访问到 b），全局EC压入 ECS。
+    2、逐行的进行分词、语法检查、代码生成，然后执行。
+        2.1、在 console.log('script1 start'); 这行代码中，不存在语法错误，执行，输出 start。
+        2.2、在 console.log('a',a); 这行代码中，对变量 a 进行 RHS 查询，在作用域链中找不到 a ，报 ReferenceError，script 块中断执行。
+    3、JS执行流进入第二个 script 块，仍然在全局 EC（JS引擎只会存在一个全局EC），将 a 的声明加入 AO（与第一个代码块相同，每个EC绑定唯一的 VO|AO） 并推入作用域。
+    4、逐行的进行分词、语法检查、代码生成，然后执行。
+        4.1、在 console.log('b',b); 这行代码中，对变量 b 进行 RHS 查询，在作用域的 AO 中找到对应的值 undefined，输出 b undefined。
+    
+    结束
+    ```
+
+- JS代码执行流程
+    > 进入script标签，【预编译】JS引擎创建全局EC，全局EC入栈-->【编译】JS解释器开始对代码逐行进行分词、语法分析、代码生成-->有错则抛出，终止执行；无错继续向下逐行执行-->【预编译】调用函数前，创建函数EC，EC入栈-->【编译】-->有错则抛出，终止执行；无错继续向下执行-->执行完毕，EC出栈-->继续以上步骤-->页面销毁，全局EC出栈，结束
+
+&emsp;&emsp;
+执行流程如上所示，首先值得
+
+&emsp;&emsp;
 创建当前环境EC流程如下：
 
 1. 初始化作用域[[Scope]]，（拷贝传入的父执行上下文的Scope），数据结构应该是数组或者链表。
@@ -28,9 +76,8 @@
         为发现的每个变量声明，在变量对象上创建一个属性——就是变量的名字，并且将变量的值初始化为undefined，如果变量的名字已经在变量对象里存在，将不会进行任何操作并继续扫描。
 
 3. 求出上下文内部this的值。
-```
 
-【*代码分析*】
+## `代码分析`
 
 ```javascript
 // 代码
@@ -89,7 +136,7 @@ CurrentEC : {
 }
 ```
 
-【*总结*】
+## `总结`
 
 > 为什么会产生变量提升与函数提升？
 
@@ -124,7 +171,7 @@ console.log('start'+i);// ReferenceError: Cannot access 'i' before initializatio
 可以抽象的理解为，AO 是VO 的实例化，AO 在执行函数前被激活。
 ```
 
-【*参考资料*】
+## `参考资料`
 
 - 《你不知道的Javascript》（上卷），第一部分，作用域和闭包
 - [JS引擎的执行过程](https://heyingye.github.io/2018/03/19/js%E5%BC%95%E6%93%8E%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/)
