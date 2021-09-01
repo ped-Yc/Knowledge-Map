@@ -8,6 +8,13 @@
 
 ### `浏览器原理`
 
+### `前端工程化`
+- 脚手架CLI
+- 打包工具：WEBPACK、GULP
+- lint工具：ESLINT、TSLINT
+- CSS规范BEM
+- JS规范
+
 ### `异常`
 
 ---
