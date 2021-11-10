@@ -14,6 +14,7 @@
 - lint工具：ESLINT、TSLINT
 - CSS规范BEM
 - JS规范
+- 前端工程化历程梳理
 
 ### `异常`
 
