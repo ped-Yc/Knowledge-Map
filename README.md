@@ -40,8 +40,9 @@
 ## **实用工具**
 - 代码规范 Eslint、Tslint
 - 打包工具 Webpack、Yarn
-- puppeteer
-- swagger
+- chrome插件
+- vscode插件
+- 工具网站 
 ---
 
 ## **Node**
