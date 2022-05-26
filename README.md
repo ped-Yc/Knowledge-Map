@@ -38,10 +38,15 @@
 ---
 
 ## **实用工具**
-- 代码规范 Eslint、Tslint
-- 打包工具 Webpack、Yarn
+- 代码规范 
+  - Eslint、Tslint
+- 打包工具 
+  - Webpack、Yarn、Vite
 - chrome插件
+  - 
 - vscode插件
+  - Gitlens
+  - TodoTree
 - 工具网站 
 ---
 
